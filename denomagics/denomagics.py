@@ -1,10 +1,9 @@
 import subprocess
 import shlex
-import base64
 import tempfile
 import os
 import json
-from IPython.display import display, HTML, Markdownfr # type: ignore
+from IPython.display import display, HTML, Markdown  # type: ignore
 from IPython.core.magic import register_cell_magic  # type: ignore
 
 
@@ -12,6 +11,7 @@ from IPython.core.magic import register_cell_magic  # type: ignore
 def is_google_colab():
     try:
         import google.colab  # type: ignore  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -37,7 +37,9 @@ def install_deno_colab():
     command = "curl -fsSL https://deno.land/x/install/install.sh | sh"
 
     # Execute shell command
-    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     stdout, stderr = process.communicate()
 
     # Display output
@@ -54,6 +56,7 @@ def register_deno_magics():
     Register Deno cell magic commands
     """
     from IPython import get_ipython  # type: ignore
+
     ipy = get_ipython()
     ipy.register_magic_function(d)
     ipy.register_magic_function(run_deno)
@@ -63,9 +66,11 @@ def register_deno_magics():
     ipy.register_magic_function(view_deno_bundle_iframe)
     print("Deno cell magic commands registered.")
 
+
 @register_cell_magic
 def d(line, cell):
     run_deno(line, cell)
+
 
 @register_cell_magic
 def run_deno(line, cell):
@@ -82,9 +87,12 @@ def run_deno(line, cell):
         curdir = curdir.replace("\\", "/")
 
         # Retrieve Jupyter user variables, convert them to a JSON file, and save them as a temporary file
-        with tempfile.NamedTemporaryFile(dir=curdir, suffix=".json", delete=False) as json_file:
+        with tempfile.NamedTemporaryFile(
+            dir=curdir, suffix=".json", delete=False
+        ) as json_file:
             # Retrieve IPython user namespace
             from IPython import get_ipython  # type: ignore
+
             ipython = get_ipython()
             variables = ipython.user_ns
 
@@ -96,7 +104,11 @@ def run_deno(line, cell):
                 except (TypeError, OverflowError):
                     return False
 
-            filtered_vars = {name: value for name, value in variables.items() if is_serializable(value)}
+            filtered_vars = {
+                name: value
+                for name, value in variables.items()
+                if is_serializable(value)
+            }
 
             # Convert to JSON format
             json_data = json.dumps(filtered_vars)
@@ -150,6 +162,7 @@ globalThis.jupyterExit = function(code = 0) {
         with open(json_file_path, "r") as f:
             # Retrieve IPython user namespace
             from IPython import get_ipython  # type: ignore
+
             ipython = get_ipython()
             variables = ipython.user_ns
 
@@ -224,7 +237,7 @@ def deno_transpile(code, type):
     curdir = curdir.replace("\\", "/")
 
     with tempfile.NamedTemporaryFile(dir=curdir, suffix=".ts", delete=False) as ts_file:
-        ts_file.write(code.encode('utf-8'))
+        ts_file.write(code.encode("utf-8"))
         ts_file_base_path = ts_file.name
         ts_file_path = ts_file_base_path.replace("\\", "/")
 
@@ -244,8 +257,10 @@ if ("{type}" === "transpile") {{
 console.log(code);
     """.strip()
 
-    with tempfile.NamedTemporaryFile(dir=curdir, suffix=".ts", delete=False) as deno_file:
-        deno_file.write(deno_script.encode('utf-8'))
+    with tempfile.NamedTemporaryFile(
+        dir=curdir, suffix=".ts", delete=False
+    ) as deno_file:
+        deno_file.write(deno_script.encode("utf-8"))
         deno_file_path = deno_file.name
 
     # Execute Deno script and capture output
@@ -317,11 +332,19 @@ def display_result(stdout, stderr, returncode):
             display(Markdown(f"```json\n{json.dumps(json_output, indent=4)}\n```"))
         else:
             # Plain text output with success style
-            display(HTML(f"<div style='color: green; font-weight: bold;'>Execution successful:</div>"))
+            display(
+                HTML(
+                    f"<div style='color: green; font-weight: bold;'>Execution successful:</div>"
+                )
+            )
             display(HTML(f"<pre style='color: green;'>{stdout.decode('utf-8')}</pre>"))
     else:
         # Error case with error styling
-        display(HTML(f"<div style='color: red; font-weight: bold;'>Error occurred during execution:</div>"))
+        display(
+            HTML(
+                f"<div style='color: red; font-weight: bold;'>Error occurred during execution:</div>"
+            )
+        )
         display(HTML(f"<pre style='color: red;'>{stderr.decode('utf-8')}</pre>"))
 
 
