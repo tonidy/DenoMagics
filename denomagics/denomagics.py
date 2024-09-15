@@ -131,6 +131,8 @@ globalThis.jupyterExit = function(code = 0) {
 
     cell = pre_script + cell + after_script
 
+    print("Cell: ", cell)
+
     # Execute Deno command
     denocmd = get_deno_cmd()
     process = subprocess.Popen(
