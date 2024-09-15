@@ -1,1 +1,0 @@
-from .denomagic import install_deno_colab, register_deno_magics
