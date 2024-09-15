@@ -332,12 +332,12 @@ def display_result(stdout, stderr, returncode):
             display(Markdown(f"```json\n{json.dumps(json_output, indent=4)}\n```"))
         else:
             # Plain text output with success style
-            display(
-                HTML(
-                    f"<div style='color: green; font-weight: bold;'>Execution successful:</div>"
-                )
-            )
-            display(HTML(f"<pre style='color: green;'>{stdout.decode('utf-8')}</pre>"))
+            # display(
+            #     HTML(
+            #         f"<div style='color: green; font-weight: bold;'>Execution successful:</div>"
+            #     )
+            # )
+            display(HTML(f"<pre>{stdout.decode('utf-8')}</pre>"))
     else:
         # Error case with error styling
         display(
