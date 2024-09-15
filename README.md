@@ -1,34 +1,46 @@
 # Deno Magic Command
 
-## 概要
+This fork simplifies the magic command; instead of `%%run_deno`, we change it to `%%d`.
+And also translate all Japanese to English.
 
-Jypyter(notebook/lab)またはGoogle ColabのコードセルにDeno(JavaScript/TypeScript)を書いて実行するためのマジックコマンドです。
+## Overview
 
-## 使い方
+This is a magic command to write and execute Deno (JavaScript/TypeScript) code in code cells in Jupyter (notebook/lab) or Google Colab.
 
-### インストール
+## Usage
 
-Jupyter環境ではあらかじめDenoをインストールしてパスを通しておく必要があります。インストール方法は[Denoの公式サイト](https://deno.com/)を参照してください。VSCode経由でJupyter(拡張機能)を使う場合はさらにDeno拡張機能をインストールしたうえで設定でDeno.enableをtrueにしてください。
+### Installation
 
-Google Colab環境ではパッケージにインストール用の関数が用意されているので個別にインストールする必要はありません。
+In Jupyter environments, you need to install Deno in advance and add it to your PATH. For installation methods, please refer to [Deno's official website](https://deno.com/). If you're using Jupyter (extension) via VSCode, additionally install the Deno extension and set `Deno.enable` to true in the settings.
 
-### マジックコマンドの追加
+In the Google Colab environment, there's an installation function provided in the package, so you don't need to install it separately.
 
-コードセルに以下のコードを貼り付けて実行しマジックコマンドを登録してください。カーネルやランタイムを再起動する度に再実行する必要があります。
+### Adding the Magic Command
+
+Paste the following code into a code cell and execute it to register the magic command. You need to re-run it each time you restart the kernel or runtime.
 
 ```python
-%pip install denomagic
+%pip install denomagics
 import denomagic
 
-# denoのインストール(Google Colab用、他の環境では呼び出してもインストールしません)
+# Install Deno (for Google Colab; calling this in other environments won't install Deno)
+
+```python
 denomagic.install_deno_colab()
-# マジックコマンドの登録
+# Register the magic command
 denomagic.register_deno_magics()
+
+### How to Use the Magic Command
+
+At the beginning of a code cell, write the magic command as follows. When executed, the JavaScript/TypeScript code in the code cell will be run by Deno.
+
+```javascript
+%%d
+
+console.log("Hello, world!");
 ```
 
-### マジックコマンドの使い方
-
-コードセルの冒頭に以下のようにマジックコマンドを記述してください。実行するとDenoによってコードセル内のJavaScript/TypeScriptコードが実行されます。
+or with old syntax
 
 ```javascript
 %%run_deno
@@ -36,8 +48,9 @@ denomagic.register_deno_magics()
 console.log("Hello, world!");
 ```
 
-また、コードセルのJavaScript/TypeScriptコードをDenoでトランスパイルしてiframe内で実行するマジックコマンドも用意しています。
-以下は、ブラウザ用のライブラリであるp5.jsを使った例です。
+We also provide a magic command that transpiles the JavaScript/TypeScript code in the code cell using Deno and runs it inside an iframe.
+
+Below is an example using p5.js, a library for browsers.
 
 ```javascript
 %%run_deno_iframe 830 430
@@ -84,53 +97,52 @@ const sketch = (p: any) => {
 new p5(sketch);
 ```
 
-### マジックコマンド
+### Magic Command
 
-#### %%run_deno
+#### %%d
 
 ```jupyter
 %%run_deno [userval]
 ```
 
-コードセル内のJavaScript/TypeScriptをDenoで実行します。
+Executes the JavaScript/TypeScript code in the code cell using Deno.
 
-- userval: Jupyterのユーザー変数をDenoで利用するかどうかを設定します。デフォルトはFalseです。
+- **userval**: Specifies whether to use Jupyter user variables in Deno. The default is `False`.
 
-usevalをTrueにすると、Jupyterのユーザー変数を`globalThis.jupyter`を通じて利用できるようになり、セルを超えた変数のやりとりが出来るようになります。  
-内部ではJupyterとDenoの間をJSONの一時ファイルでやりとりしているため、JSONに変換できないオブジェクトは利用できません。  
-利用した場合の動作は未定義です。
+When `userval` is set to `True`, you can access Jupyter's user variables through `globalThis.jupyter`, allowing variable exchange across cells.  
+Internally, data is exchanged between Jupyter and Deno using a temporary JSON file, so objects that cannot be converted to JSON cannot be used.  
+Behavior is undefined if such objects are used.
 
-Jupyterのコードセル内で実行されている場合、`globalThis.isJupyterCell`が定義されているので、これが`undefined`ではないかどうかを確認することでJupyterのコードセルからの実行なのかどうかを判定できます。
+If the code is being executed within a Jupyter code cell, `globalThis.isJupyterCell` is defined. By checking whether this is not `undefined`, you can determine if the code is being executed from a Jupyter code cell.
 
-Jupyterユーザー変数を利用した状態でコードセルの途中で終了させたい場合はDeno.exitの代わりに`jupyterExit()`を利用してください。
-Deno.exitで終了するとJupyterのユーザー変数は更新されません。
+If you want to terminate the execution in the middle of a code cell while using Jupyter user variables, use `jupyterExit()` instead of `Deno.exit`. If you exit with `Deno.exit`, Jupyter's user variables will not be updated.
 
 #### %%run_deno_iframe
 
-コードセル内のJavaScript/TypeScriptをDenoでトランスパイルしてiframe内で実行します。
+Transpiles the JavaScript/TypeScript in the code cell using Deno and runs it inside an iframe.
 
 ```jupyter
 %%run_deno_iframe [width] [height] [srcs]
 ```
 
-- width: iframeの幅を指定します。デフォルトは500です。
-- height: iframeの高さを指定します。デフォルトは500です。
-- srcs: 外部JavaScriptのURLを指定します。複数指定する場合はスペースで区切ります。
+- **width**: Specifies the width of the iframe. The default is 500.
+- **height**: Specifies the height of the iframe. The default is 500.
+- **srcs**: Specifies the URLs of external JavaScript files. If specifying multiple URLs, separate them with spaces.
 
 #### %%run_deno_bundle_iframe
 
-コードセル内のJavaScript/TypeScriptをimportしたコードも含めてトランスパイル及びバンドルしてiframe内で実行します。
+Transpiles and bundles the JavaScript/TypeScript in the code cell, including the imported code, and runs it inside an iframe.
 
-引数は%%run_deno_iframeと同じです。
+The arguments are the same as `%%denoiframe`.
 
-#### %%view_deno_iframe
+### %%view_deno_iframe
 
-コードセル内のJavaScript/TypeScriptをDenoでトランスパイルした後生成したHTMLを出力します。
+Outputs the HTML generated after transpiling the JavaScript/TypeScript in the code cell using Deno.
 
-引数は%%run_deno_iframeと同じです。
+The arguments are the same as `%%run_deno_iframe`.
 
 #### %%view_deno_bundle_iframe
 
-コードセル内のJavaScript/TypeScriptをimportしたコードも含めてトランスパイル及びバンドルした後生成したHTMLを出力します。
+Outputs the HTML generated after transpiling and bundling the JavaScript/TypeScript in the code cell, including the imported code.
 
-引数は%%run_deno_iframeと同じです。
+The arguments are the same as `%%run_deno_iframe`.

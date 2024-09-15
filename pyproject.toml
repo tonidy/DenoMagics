@@ -3,13 +3,13 @@ requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "denomagic"
+name = "denomagics"
 version = "1.1.0"
 description = "Python package to run JavaScript/TypeScript(Deno backend) in Jupyter notebooks and Google Colab."
 readme = "README.md"
 authors = [
-  {name = "Uniras"},
-  {email = "tkappeng@gmail.com"}
+  {name = "tonidy"},
+  {email = ""}
 ]
 license = {text = "MIT License"}
 keywords = ["deno", "jupyter", "magic"]
@@ -29,5 +29,5 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/uniras/DenoMagic"
-Repository = "https://github.com/uniras/DenoMagic"
+Homepage = "https://github.com/tonidy/DenoMagics"
+Repository = "https://github.com/tonidy/DenoMagics"
