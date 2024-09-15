@@ -4,7 +4,7 @@ import base64
 import tempfile
 import os
 import json
-import IPython.display as display  # type: ignore
+from IPython.display import display, HTML, Markdownfr # type: ignore
 from IPython.core.magic import register_cell_magic  # type: ignore
 
 
@@ -160,11 +160,14 @@ globalThis.jupyterExit = function(code = 0) {
                 variables[key] = value
         os.remove(json_file_path)
 
+    # Display results using the enhanced display function
+    display_result(stdout, stderr, process.returncode)
+
     # Display results
-    if process.returncode == 0:
-        print(stdout.decode("utf-8"))
-    else:
-        print(stderr.decode("utf-8"))
+    # if process.returncode == 0:
+    #     print(stdout.decode("utf-8"))
+    # else:
+    #     print(stderr.decode("utf-8"))
 
 
 @register_cell_magic
@@ -299,3 +302,35 @@ def output_iframe(js_code, width, height, srcs, viewmode):
 </body>
 </html>
     """
+
+
+def display_result(stdout, stderr, returncode):
+    """
+    Enhanced result display function for Jupyter Notebook.
+    """
+    # Success case
+    if returncode == 0:
+        if is_json(stdout.decode("utf-8")):
+            # Pretty print JSON output if it's JSON
+            json_output = json.loads(stdout.decode("utf-8"))
+            display(Markdown("### Output:"))
+            display(Markdown(f"```json\n{json.dumps(json_output, indent=4)}\n```"))
+        else:
+            # Plain text output with success style
+            display(HTML(f"<div style='color: green; font-weight: bold;'>Execution successful:</div>"))
+            display(HTML(f"<pre style='color: green;'>{stdout.decode('utf-8')}</pre>"))
+    else:
+        # Error case with error styling
+        display(HTML(f"<div style='color: red; font-weight: bold;'>Error occurred during execution:</div>"))
+        display(HTML(f"<pre style='color: red;'>{stderr.decode('utf-8')}</pre>"))
+
+
+def is_json(myjson):
+    """
+    Check if a string is valid JSON
+    """
+    try:
+        json.loads(myjson)
+    except ValueError:
+        return False
+    return True
