@@ -134,7 +134,7 @@ globalThis.jupyterExit = function(code = 0) {
     # Execute Deno command
     denocmd = get_deno_cmd()
     process = subprocess.Popen(
-        [denocmd, "eval", cell],
+        [denocmd, "eval", cell, "-p"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
