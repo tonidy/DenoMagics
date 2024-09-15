@@ -55,6 +55,7 @@ def register_deno_magics():
     """
     from IPython import get_ipython  # type: ignore
     ipy = get_ipython()
+    ipy.register_magic_function(d)
     ipy.register_magic_function(run_deno)
     ipy.register_magic_function(run_deno_iframe)
     ipy.register_magic_function(view_deno_iframe)
@@ -62,6 +63,9 @@ def register_deno_magics():
     ipy.register_magic_function(view_deno_bundle_iframe)
     print("Deno cell magic commands registered.")
 
+@register_cell_magic
+def d(line, cell):
+    run_deno(line, cell)
 
 @register_cell_magic
 def run_deno(line, cell):
