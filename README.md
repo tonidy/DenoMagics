@@ -22,6 +22,7 @@ Paste the following code into a code cell and execute it to register the magic c
 ```python
 %pip install denomagics
 import denomagics
+```
 
 # Install Deno (for Google Colab; calling this in other environments won't install Deno)
 
@@ -29,6 +30,7 @@ import denomagics
 denomagics.install_deno_colab()
 # Register the magic command
 denomagics.register_deno_magics()
+```
 
 ### How to Use the Magic Command
 
