@@ -294,4 +294,4 @@ def output_iframe(js_code, width, height, srcs, viewmode):
     </script>
 </body>
 </html>
-    """.
+    """
