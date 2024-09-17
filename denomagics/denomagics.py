@@ -1,5 +1,6 @@
 import subprocess
 import shlex
+import base64
 import tempfile
 import os
 import json
@@ -322,7 +323,19 @@ def output_iframe(js_code, width, height, srcs, viewmode):
     </script>
 </body>
 </html>
-    """
+    """.strip()
+
+    if viewmode:
+        # Display HTML
+        print(base_html)
+    else:
+        # Encode HTML as a data URI
+        data_uri = "data:text/html;base64," + base64.b64encode(
+            base_html.encode("utf-8")
+        ).decode("utf-8")
+
+        # Display using an IFrame
+        display.display(display.IFrame(src=data_uri, width=width, height=height))
 
 
 def display_result(stdout, stderr, returncode):
@@ -340,7 +353,7 @@ def display_result(stdout, stderr, returncode):
             # Plain text output with success style
             # display(
             #     HTML(
-            #         f"<div style='color: green; font-weight: bold;'>Execution successful:</div>"
+            #         "<div style='color: green; font-weight: bold;'>Execution successful:</div>"
             #     )
             # )
             display(HTML(f"<pre>{stdout.decode('utf-8')}</pre>"))
@@ -348,7 +361,7 @@ def display_result(stdout, stderr, returncode):
         # Error case with error styling
         display(
             HTML(
-                f"<div style='color: red; font-weight: bold;'>Error occurred during execution:</div>"
+                "<div style='color: red; font-weight: bold;'>Error occurred during execution:</div>"
             )
         )
         display(HTML(f"<pre style='color: red;'>{stderr.decode('utf-8')}</pre>"))
