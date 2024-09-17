@@ -80,6 +80,11 @@ def run_deno(line, cell):
     args = shlex.split(line)
 
     useval = args[0] if len(args) > 0 else "False"
+    verbose = args[1] if len(args) > 1 else ""
+
+    isVerbose = False
+    if verbose.lower() == "v" or verbose.lower() == "verbose":
+        isVerbose = True
 
     # Retrieve Jupyter user variables and make them available in the Deno script
     if useval.lower() == "true":
@@ -143,7 +148,8 @@ globalThis.jupyterExit = function(code = 0) {
 
     cell = pre_script + cell + after_script
 
-    print("Cell: ", cell)
+    if isVerbose:
+        print("Cell: ", cell)
 
     # Execute Deno command
     denocmd = get_deno_cmd()
@@ -153,7 +159,7 @@ globalThis.jupyterExit = function(code = 0) {
         stderr=subprocess.PIPE,
     )
 
-    subprocess.run([denocmd, "eval", "--help"], capture_output=True)
+    # subprocess.run([denocmd, "eval", "--help"], capture_output=True)
 
     stdout, stderr = process.communicate()
 
